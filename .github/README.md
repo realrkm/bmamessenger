@@ -2,6 +2,41 @@
 
 BMA Messenger is an Android application that allows users to send SMS messages and share PDF documents via WhatsApp (tested on version 2.26.5.74). The application is built with modern Android development technologies, including Jetpack Compose, Retrofit, and Coroutines.
 
+## 🚀 Getting Started
+
+Follow these steps to get the project up and running on your local machine.
+
+### Prerequisites
+- **Android Studio** (Ladybug or newer recommended)
+- **Android Device** with an active SIM card (for SMS functionality)
+- **Anvil Account** to host the Python backend
+- **Python 3.10+** (if running the Uplink locally)
+
+### Installation & Setup
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com
+   cd bma-messenger
+   ```
+
+**Backend Configuration**
+
+1. Head to your Anvil Editor.
+2. Copy the Backend Endpoints provided in the Backend Setup section below into a Server Module.
+3. Enable the App HTTP API in Anvil settings to allow the Android app to communicate with your endpoints.
+
+**Android App Configuration**
+
+1. Open the project in Android Studio.
+2. Wait for Gradle to sync all dependencies.
+3. Run the app on your physical device.
+4. Go to Settings within the app and enter your Anvil Base URL (e.g., https://your-app.anvil.app).
+
+**Permissions**
+
+Upon first launch, the app will request SEND_SMS permissions. Ensure you Accept to enable the core messaging features.
+
 ## Features
 
 -   **Send SMS:** Send individual or bulk SMS messages.
