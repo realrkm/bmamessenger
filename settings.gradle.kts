@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "BMASendSMS"
+rootProject.name = "BMAMessenger"
 include(":app")
  
