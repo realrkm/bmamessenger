@@ -19,7 +19,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -223,7 +223,7 @@ fun SmsGatewayScreen(viewModel: SmsViewModel, onOpenSettings: () -> Unit) {
 
                     // Display the list of SMS messages.
                     LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 100.dp)) {
-                        items(items = viewModel.messages, key = { it.id }) { msg ->
+                        itemsIndexed(items = viewModel.messages) { _, msg ->
                             SmsCard(
                                 msg = msg,
                                 onSend = { viewModel.sendSingleSms(context, msg) },

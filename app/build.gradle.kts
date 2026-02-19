@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.bmasendsms"
+        applicationId = "com.example.bmamessenger"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
