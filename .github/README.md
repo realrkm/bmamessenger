@@ -12,94 +12,13 @@ Follow these steps to get the project up and running on your local machine.
 - **Anvil Account** to host the Python backend
 - **Python 3.10+** (if running the Uplink locally)
 
-### Installation & Setup
+## Installation & Setup
 
-1. **Clone the Repository**
+ ### Clone the Repository
    ```bash
-   git clone https://github.com
+   git clone https://github.com/realrkm/bmamessenger.git
    cd bma-messenger
    ```
-
-**Backend Configuration**
-
-1. Head to your Anvil Editor.
-2. Copy the Backend Endpoints provided in the Backend Setup section below into a Server Module.
-3. Enable the App HTTP API in Anvil settings to allow the Android app to communicate with your endpoints.
-
-**Android App Configuration**
-
-1. Open the project in Android Studio.
-2. Wait for Gradle to sync all dependencies.
-3. Run the app on your physical device.
-4. Go to Settings within the app and enter your Anvil Base URL (e.g., https://your-app.anvil.app).
-
-**Permissions**
-
-Upon first launch, the app will request SEND_SMS permissions. Ensure you Accept to enable the core messaging features.
-
-## Features
-
--   **Send SMS:** Send individual or bulk SMS messages.
--   **Share PDF:** Generate and share PDF documents via WhatsApp.
--   **Dark Theme:** A modern, dark theme for a great user experience.
--   **Pull to Refresh:** Refresh the list of pending SMS messages with a simple pull-down gesture.
--   **Settings:** Configure the Anvil base URL and refresh interval.
-
-## Screenshots
-
-1.  **Accept SMS permission**
-
-    <img src="../images/Screen_1.jpeg" width="350" alt="Accept SMS permission" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-
-2.  **Display without SMS messages.**
-
-    <img src="../images/Screen_2.jpeg" width="350" alt="Display without SMS messages" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-    
-3.  **Configure Anvil Base Url and Refresh interval under Settings.**
-
-    <img src="../images/Screen_3.jpeg" width="350" alt="Configure Anvil Base Url and Refresh interval" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-   
-4.  **Messages loaded in the app.**
-
-    <img src="../images/Screen_4.jpeg" width="350" alt="Messages loaded in the app" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-
-5.  **Share message or PDF via WhatsApp.**
-
-    <img src="../images/Screen_5.jpeg" width="350" alt="Share message or PDF via WhatsApp" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-
-## Technologies Used
-
--   **UI:**
-    -   [Jetpack Compose](https://developer.android.com/jetpack/compose) for building the user interface.
-    -   [Material 3](https://m3.material.io/) for the design system.
--   **Networking:**
-    -   [Retrofit](https://square.github.io/retrofit/) for making API calls to the Anvil server.
-    -   [OkHttp](https://square.github.io/okhttp/) as the HTTP client.
--   **Asynchronous Programming:**
-    -   [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) for managing background threads.
--   **Data Persistence:**
-    -   [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for storing settings.
-
-## Dependencies
-
--   `androidx.core:core-ktx`
--   `androidx.lifecycle:lifecycle-runtime-ktx`
--   `androidx.activity:activity-compose`
--   `androidx.compose.ui:ui`
--   `androidx.compose.ui:ui-graphics`
--   `androidx.compose.ui:ui-tooling-preview`
--   `androidx.compose.material3:material3`
--   `androidx.compose.material3:material3-pull-to-refresh`
--   `junit:junit`
--   `androidx.test.ext:junit`
--   `androidx.test.espresso:espresso-core`
--   `androidx.compose.ui:ui-test-junit4`
--   `androidx.compose.ui:ui-tooling`
--   `androidx.compose.ui:ui-test-manifest`
--   `com.squareup.retrofit2:retrofit`
--   `com.squareup.retrofit2:converter-gson`
--   `androidx.lifecycle:lifecycle-viewmodel-compose`
--   `androidx.datastore:datastore-preferences`
 
 ## Backend Setup
 
@@ -189,3 +108,80 @@ def generate_pdf(jobcardid, **kwargs):
         # Good practice to catch generation errors so the app knows it failed
         return anvil.server.HttpResponse(500, f"PDF Generation failed: {str(e)}")
 ```
+
+
+**Android App Configuration**
+
+1. Open the project in Android Studio.
+2. Wait for Gradle to sync all dependencies.
+3. Run the app on your physical device.
+4. Go to Settings within the app and enter your Anvil Base URL (e.g., https://your-app.anvil.app).
+
+**Permissions**
+
+Upon first launch, the app will request SEND_SMS permissions. Ensure you Accept to enable the core messaging features.
+
+## Features
+
+-   **Send SMS:** Send individual or bulk SMS messages.
+-   **Share PDF:** Generate and share PDF documents via WhatsApp.
+-   **Dark Theme:** A modern, dark theme for a great user experience.
+-   **Pull to Refresh:** Refresh the list of pending SMS messages with a simple pull-down gesture.
+-   **Settings:** Configure the Anvil base URL and refresh interval.
+
+## Screenshots
+
+1.  **Accept SMS permission**
+
+    <img src="../images/Screen_1.jpeg" width="350" alt="Accept SMS permission" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+
+2.  **Display without SMS messages.**
+
+    <img src="../images/Screen_2.jpeg" width="350" alt="Display without SMS messages" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+    
+3.  **Configure Anvil Base Url and Refresh interval under Settings.**
+
+    <img src="../images/Screen_3.jpeg" width="350" alt="Configure Anvil Base Url and Refresh interval" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+   
+4.  **Messages loaded in the app.**
+
+    <img src="../images/Screen_4.jpeg" width="350" alt="Messages loaded in the app" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+
+5.  **Share message or PDF via WhatsApp.**
+
+    <img src="../images/Screen_5.jpeg" width="350" alt="Share message or PDF via WhatsApp" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+
+## Technologies Used
+
+-   **UI:**
+    -   [Jetpack Compose](https://developer.android.com/jetpack/compose) for building the user interface.
+    -   [Material 3](https://m3.material.io/) for the design system.
+-   **Networking:**
+    -   [Retrofit](https://square.github.io/retrofit/) for making API calls to the Anvil server.
+    -   [OkHttp](https://square.github.io/okhttp/) as the HTTP client.
+-   **Asynchronous Programming:**
+    -   [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) for managing background threads.
+-   **Data Persistence:**
+    -   [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for storing settings.
+
+## Dependencies
+
+-   `androidx.core:core-ktx`
+-   `androidx.lifecycle:lifecycle-runtime-ktx`
+-   `androidx.activity:activity-compose`
+-   `androidx.compose.ui:ui`
+-   `androidx.compose.ui:ui-graphics`
+-   `androidx.compose.ui:ui-tooling-preview`
+-   `androidx.compose.material3:material3`
+-   `androidx.compose.material3:material3-pull-to-refresh`
+-   `junit:junit`
+-   `androidx.test.ext:junit`
+-   `androidx.test.espresso:espresso-core`
+-   `androidx.compose.ui:ui-test-junit4`
+-   `androidx.compose.ui:ui-tooling`
+-   `androidx.compose.ui:ui-test-manifest`
+-   `com.squareup.retrofit2:retrofit`
+-   `com.squareup.retrofit2:converter-gson`
+-   `androidx.lifecycle:lifecycle-viewmodel-compose`
+-   `androidx.datastore:datastore-preferences`
+
