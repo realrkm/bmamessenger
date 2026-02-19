@@ -166,22 +166,23 @@ Upon first launch, the app will request SEND_SMS permissions. Ensure you Accept 
 
 ## Dependencies
 
--   `androidx.core:core-ktx`
--   `androidx.lifecycle:lifecycle-runtime-ktx`
--   `androidx.activity:activity-compose`
+-   `androidx.core:core-ktx:1.10.1`
+-   `androidx.lifecycle:lifecycle-runtime-ktx:2.10.0`
+-   `androidx.activity:activity-compose:1.8.0`
+-   `androidx.compose:compose-bom:2024.09.00`
 -   `androidx.compose.ui:ui`
 -   `androidx.compose.ui:ui-graphics`
 -   `androidx.compose.ui:ui-tooling-preview`
 -   `androidx.compose.material3:material3`
--   `androidx.compose.material3:material3-pull-to-refresh`
--   `junit:junit`
--   `androidx.test.ext:junit`
--   `androidx.test.espresso:espresso-core`
+-   `com.google.android.material:material:1.13.0`
+-   `junit:junit:4.13.2`
+-   `androidx.test.ext:junit:1.2.1`
+-   `androidx.test.espresso:espresso-core:3.6.1`
 -   `androidx.compose.ui:ui-test-junit4`
 -   `androidx.compose.ui:ui-tooling`
 -   `androidx.compose.ui:ui-test-manifest`
--   `com.squareup.retrofit2:retrofit`
--   `com.squareup.retrofit2:converter-gson`
--   `androidx.lifecycle:lifecycle-viewmodel-compose`
--   `androidx.datastore:datastore-preferences`
+-   `com.squareup.retrofit2:retrofit:2.11.0`
+-   `com.squareup.retrofit2:converter-gson:2.11.0`
+-   `androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3`
+-   `androidx.datastore:datastore-preferences:1.1.1`
 
