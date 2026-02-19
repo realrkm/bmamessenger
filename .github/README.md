@@ -1,79 +1,108 @@
 # BMA Messenger
 
-BMA Messenger is an Android application that allows users to send SMS messages and share PDF documents via WhatsApp (tested on version 2.26.5.74). The application is built with modern Android development technologies, including Jetpack Compose, Retrofit, and Coroutines.
+BMA Messenger is an Android application for sending SMS messages and sharing PDF documents via WhatsApp (tested on v2.26.5.74). It is built with Jetpack Compose, Retrofit, and Kotlin Coroutines.
+
+---
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following:
+
+| Requirement | Details |
+|---|---|
+| Android Studio | Ladybug or newer |
+| Android Device | Physical device with an active SIM card |
+| Anvil Account | Required to host the Python backend |
+| Python | Version 3.10+ (if running the Uplink locally) |
+
+---
 
 ## 🚀 Getting Started
 
-Follow these steps to get the project up and running on your local machine.
-
-### Prerequisites
-- **Android Studio** (Ladybug or newer recommended)
-- **Android Device** with an active SIM card (for SMS functionality)
-- **Anvil Account** to host the Python backend
-- **Python 3.10+** (if running the Uplink locally)
-
-## Installation & Setup
-
- ### Clone the Repository
-   ```bash
-   git clone https://github.com/realrkm/bmamessenger.git
-   cd bma-messenger
-   ```
-
-## Backend Setup
-
-The backend for this application is powered by Anvil, a platform for building web apps with nothing but Python. Python version 3.10.4 was used for testing and running the application.
-
-### Anvil Uplink Installation
-
-Install the Anvil Uplink library to connect your local Python code to the Anvil service.
-
-### For Windows:
+### 1. Clone the Repository
 
 ```bash
-python -m pip install anvil-uplink==0.6.0
+git clone https://github.com/realrkm/bmamessenger.git
+cd bma-messenger
 ```
 
-### Backend Endpoints
+### 2. Install the Anvil Uplink (Backend)
 
-The following Python code snippets detail the HTTP endpoints used by the BMA Messenger application. You will need to add this code to your Anvil server module.
+The backend is powered by [Anvil](https://anvil.works), a Python-based web app platform. Before installing dependencies, create and activate a virtual environment to keep your project packages isolated.
 
-#### Get Pending SMS
+**Step 1 — Create the virtual environment:**
 
-This endpoint retrieves all SMS messages from the database that are flagged as not yet sent.
+| OS | Command |
+|---|---|
+| Windows / macOS / Linux | `python -m venv venv` |
 
--   **Endpoint:** `GET /pending-sms`
--   **Usage:** The Android app calls this endpoint to fetch the list of pending SMS messages to display on the main screen.
+**Step 2 — Activate the virtual environment:**
+
+| OS | Command |
+|---|---|
+| Windows (Command Prompt) | `venv\Scripts\activate.bat` |
+| Windows (PowerShell) | `venv\Scripts\Activate.ps1` |
+| macOS / Linux | `source venv/bin/activate` |
+
+> Once activated, your terminal prompt will be prefixed with `(venv)`, confirming the environment is active.
+
+**Step 3 — Install the Anvil Uplink library:**
+
+```bash
+pip install anvil-uplink==0.6.0
+```
+
+> To deactivate the virtual environment when you are done, run `deactivate`.
+
+### 3. Configure the Android App
+
+1. Open the project in **Android Studio**.
+2. Wait for **Gradle** to finish syncing all dependencies.
+3. Run the app on your **physical Android device**.
+4. Navigate to **Settings** within the app and enter your Anvil Base URL (e.g., `https://your-app.anvil.app`).
+
+### 4. Grant Permissions
+
+On first launch, the app will request **SEND_SMS** permission. Tap **Accept** to enable core messaging functionality.
+
+---
+
+## ⚙️ Backend API Reference
+
+Add the following endpoints to your **Anvil server module**.
+
+---
+
+### `GET /pending-sms` — Fetch Pending Messages
+
+Retrieves all SMS records from the database where `flag = True` (i.e., not yet sent). The Android app calls this on startup and on pull-to-refresh.
 
 ```python
 @anvil.server.http_endpoint('/pending-sms', methods=["GET"])
 def get_pending_sms():
     with db_cursor() as cursor:
-        # We only fetch records where flag is True (1)
         query = "SELECT id, fullname, phone, message, jobcardrefid FROM tbl_sms WHERE flag = True"
         cursor.execute(query)
         rows = cursor.fetchall()
-        
-        # Convert tuples/dictionaries to a clean list for Android
+
         pending_messages = []
         for row in rows:
             pending_messages.append({
-                "id": row[0] if isinstance(row, tuple) else row['id'],
-                "fullname": row[1] if isinstance(row, tuple) else row["fullname"],
-                "phone": row[2] if isinstance(row, tuple) else row['phone'],
-                "message": row[3] if isinstance(row, tuple) else row['message'],
+                "id":           row[0] if isinstance(row, tuple) else row['id'],
+                "fullname":     row[1] if isinstance(row, tuple) else row["fullname"],
+                "phone":        row[2] if isinstance(row, tuple) else row['phone'],
+                "message":      row[3] if isinstance(row, tuple) else row['message'],
                 "jobcardrefid": row[4] if isinstance(row, tuple) else row['jobcardrefid'],
-                "flag": True # Always true because of our SQL filter
+                "flag": True
             })
         return pending_messages
 ```
 
-#### Mark SMS as Sent
+---
 
-This endpoint marks a specific SMS message as sent in the database.
+### `POST /mark-sent/:msg_id` — Mark Message as Sent
 
--   **Endpoint:** `POST /mark-sent/:msg_id`
--   **Usage:** After an SMS is successfully sent from the Android app, it calls this endpoint to update the message's status on the backend.
+Updates a specific SMS record in the database, setting `flag = False`. Called by the app immediately after a message is successfully sent.
 
 ```python
 @anvil.server.http_endpoint('/mark-sent/:msg_id', methods=["POST"])
@@ -84,52 +113,38 @@ def mark_sms_sent(msg_id, **kwargs):
     return {"status": "success"}
 ```
 
-#### Generate PDF
+---
 
-This endpoint generates a PDF document for a given job card ID.
+### `GET /generate-pdf/:jobcardid` — Generate a PDF
 
--   **Endpoint:** `GET /generate-pdf/:jobcardid`
--   **Usage:** When the user chooses to share a PDF via WhatsApp, the app calls this endpoint to retrieve the generated document.
+Generates and returns a PDF document for the specified job card ID. Called when the user chooses to share a PDF via WhatsApp.
 
 ```python
 @anvil.server.http_endpoint('/generate-pdf/:jobcardid', methods=["GET"])
 def generate_pdf(jobcardid, **kwargs):
     try:
-        # Convert the string from the URL to an integer before passing it
         job_id_int = int(jobcardid)
-        
-        # This will return the anvil.media object directly to the HTTP response
         media_object = createQuotationInvoicePdf(job_id_int, "Invoice")
         return media_object
-        
     except ValueError:
         return anvil.server.HttpResponse(400, "Invalid JobCard ID format.")
     except Exception as e:
-        # Good practice to catch generation errors so the app knows it failed
         return anvil.server.HttpResponse(500, f"PDF Generation failed: {str(e)}")
 ```
 
+---
 
-**Android App Configuration**
+## ✨ Features
 
-1. Open the project in Android Studio.
-2. Wait for Gradle to sync all dependencies.
-3. Run the app on your physical device.
-4. Go to Settings within the app and enter your Anvil Base URL (e.g., https://your-app.anvil.app).
+- **Send SMS** — Send individual or bulk SMS messages directly from the app.
+- **Share PDF** — Generate job card PDFs and share them via WhatsApp.
+- **Pull to Refresh** — Swipe down to reload the list of pending messages.
+- **Configurable Settings** — Set your Anvil base URL and message refresh interval.
+- **Dark Theme** — A clean, modern dark UI built with Material 3.
 
-**Permissions**
+---
 
-Upon first launch, the app will request SEND_SMS permissions. Ensure you Accept to enable the core messaging features.
-
-## Features
-
--   **Send SMS:** Send individual or bulk SMS messages.
--   **Share PDF:** Generate and share PDF documents via WhatsApp.
--   **Dark Theme:** A modern, dark theme for a great user experience.
--   **Pull to Refresh:** Refresh the list of pending SMS messages with a simple pull-down gesture.
--   **Settings:** Configure the Anvil base URL and refresh interval.
-
-## Screenshots
+## 📸 Screenshots
 
 1.  **Accept SMS permission**
 
@@ -138,11 +153,11 @@ Upon first launch, the app will request SEND_SMS permissions. Ensure you Accept 
 2.  **Display without SMS messages.**
 
     <img src="../images/Screen_2.jpeg" width="350" alt="Display without SMS messages" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-    
-3.  **Configure Anvil Base Url and Refresh interval under Settings.**
 
-    <img src="../images/Screen_3.jpeg" width="350" alt="Configure Anvil Base Url and Refresh interval" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-   
+3.  **Configure Anvil Base URL and Refresh interval under Settings.**
+
+    <img src="../images/Screen_3.jpeg" width="350" alt="Configure Anvil Base URL and Refresh interval" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+
 4.  **Messages loaded in the app.**
 
     <img src="../images/Screen_4.jpeg" width="350" alt="Messages loaded in the app" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
@@ -151,38 +166,42 @@ Upon first launch, the app will request SEND_SMS permissions. Ensure you Accept 
 
     <img src="../images/Screen_5.jpeg" width="350" alt="Share message or PDF via WhatsApp" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
 
-## Technologies Used
+---
 
--   **UI:**
-    -   [Jetpack Compose](https://developer.android.com/jetpack/compose) for building the user interface.
-    -   [Material 3](https://m3.material.io/) for the design system.
--   **Networking:**
-    -   [Retrofit](https://square.github.io/retrofit/) for making API calls to the Anvil server.
-    -   [OkHttp](https://square.github.io/okhttp/) as the HTTP client.
--   **Asynchronous Programming:**
-    -   [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) for managing background threads.
--   **Data Persistence:**
-    -   [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for storing settings.
+## 🛠️ Tech Stack
 
-## Dependencies
+| Layer | Technology |
+|---|---|
+| UI | [Jetpack Compose](https://developer.android.com/jetpack/compose), [Material 3](https://m3.material.io/) |
+| Networking | [Retrofit 2](https://square.github.io/retrofit/), [OkHttp](https://square.github.io/okhttp/) |
+| Async | [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) |
+| Storage | [DataStore Preferences](https://developer.android.com/topic/libraries/architecture/datastore) |
 
--   `androidx.core:core-ktx:1.10.1`
--   `androidx.lifecycle:lifecycle-runtime-ktx:2.10.0`
--   `androidx.activity:activity-compose:1.8.0`
--   `androidx.compose:compose-bom:2024.09.00`
--   `androidx.compose.ui:ui`
--   `androidx.compose.ui:ui-graphics`
--   `androidx.compose.ui:ui-tooling-preview`
--   `androidx.compose.material3:material3`
--   `com.google.android.material:material:1.13.0`
--   `junit:junit:4.13.2`
--   `androidx.test.ext:junit:1.2.1`
--   `androidx.test.espresso:espresso-core:3.6.1`
--   `androidx.compose.ui:ui-test-junit4`
--   `androidx.compose.ui:ui-tooling`
--   `androidx.compose.ui:ui-test-manifest`
--   `com.squareup.retrofit2:retrofit:2.11.0`
--   `com.squareup.retrofit2:converter-gson:2.11.0`
--   `androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3`
--   `androidx.datastore:datastore-preferences:1.1.1`
+---
 
+## 📦 Key Dependencies
+
+```gradle
+// Core
+androidx.core:core-ktx:1.10.1
+androidx.lifecycle:lifecycle-runtime-ktx:2.10.0
+androidx.activity:activity-compose:1.8.0
+
+// Compose
+androidx.compose:compose-bom:2024.09.00
+androidx.compose.material3:material3
+com.google.android.material:material:1.13.0
+
+// Networking
+com.squareup.retrofit2:retrofit:2.11.0
+com.squareup.retrofit2:converter-gson:2.11.0
+
+// Architecture
+androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3
+androidx.datastore:datastore-preferences:1.1.1
+
+// Testing
+junit:junit:4.13.2
+androidx.test.ext:junit:1.2.1
+androidx.test.espresso:espresso-core:3.6.1
+```
